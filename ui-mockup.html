@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hatch Desktop — UI 设计稿</title>
+<style>
+  :root{
+    --bg:#faf9f5; --panel:#f3f1ea; --card:#ffffff; --border:#e3ded2;
+    --text:#2b2620; --muted:#7a7264; --accent:#bf5b34; --accent-soft:#ede6da;
+    --green:#2e7d4f; --red:#b23b2e; --amber:#b07d2b;
+    --serif:Georgia,"Songti SC","SimSun",serif;
+    --sans:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px}
+  .layout{display:flex;height:100vh;overflow:hidden}
+
+  /* ---------- 左侧栏 ---------- */
+  .sidebar{width:264px;flex:none;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 12px}
+  .brand{font-family:var(--serif);font-size:24px;font-weight:600;padding:2px 8px 14px}
+  .new-chat{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px;font:inherit;cursor:pointer;margin-bottom:14px}
+  .nav{display:flex;flex-direction:column;gap:2px;margin-bottom:16px}
+  .nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:var(--text);text-decoration:none;cursor:pointer}
+  .nav a:hover{background:var(--accent-soft)}
+  .nav a.active{background:var(--accent-soft);font-weight:600}
+  .nav .badge{margin-left:auto;background:var(--accent);color:#fff;font-size:11px;border-radius:10px;padding:1px 7px}
+  .side-title{font-size:11px;color:var(--muted);letter-spacing:.08em;padding:6px 10px;text-transform:uppercase}
+  .sessions{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+  .sessions a{padding:8px 10px;border-radius:8px;color:var(--text);text-decoration:none;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sessions a:hover{background:var(--accent-soft)}
+  .sessions a.active{background:#fff;border:1px solid var(--border);font-weight:600}
+  .sessions .time{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px}
+  .side-foot{border-top:1px solid var(--border);padding-top:12px;font-size:12px;color:var(--muted)}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px}
+  .user-row{display:flex;align-items:center;gap:10px;margin-top:10px;color:var(--text)}
+  .avatar{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+
+  /* ---------- 中间对话区 ---------- */
+  .main{flex:1;display:flex;flex-direction:column;min-width:0}
+  .chat-head{display:flex;align-items:center;gap:12px;padding:12px 24px;border-bottom:1px solid var(--border)}
+  .chat-head .title{font-family:var(--serif);font-size:17px;font-weight:600}
+  .model-picker{margin-left:auto;border:1px solid var(--border);background:#fff;border-radius:8px;padding:6px 10px;font-size:12px;color:var(--muted)}
+  .chat{flex:1;overflow-y:auto;padding:28px 24px}
+  .chat-inner{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+  .msg-user{align-self:flex-end;background:var(--accent-soft);border-radius:16px;padding:12px 16px;max-width:72%;line-height:1.6}
+  .msg-ai{line-height:1.7}
+  .msg-ai p{margin:0 0 10px}
+  .plan{border:1px solid var(--border);background:var(--card);border-radius:14px;padding:14px 16px;margin:12px 0}
+  .plan h4{margin:0 0 10px;font-size:13px;color:var(--muted);font-weight:600;letter-spacing:.04em}
+  .plan li{list-style:none;padding:5px 0;display:flex;gap:10px;align-items:baseline}
+  .plan ul{margin:0;padding:0}
+  .check{width:18px;height:18px;flex:none;border-radius:50%;border:1.5px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:11px;position:relative;top:3px}
+  .check.done{background:var(--green);border-color:var(--green);color:#fff}
+  .check.doing{border-color:var(--accent);color:var(--accent)}
+  .tool{border:1px solid var(--border);background:var(--card);border-radius:12px;padding:10px 14px;margin:10px 0;font-size:13px}
+  .tool .tname{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600}
+  .tool .tdesc{color:var(--muted);margin-top:3px}
+  .tool .tok{float:right;color:var(--green);font-size:12px}
+  .approval{border:1.5px solid var(--amber);background:#fdf6e9;border-radius:14px;padding:16px;margin:12px 0}
+  .approval h4{margin:0 0 6px;font-size:14px}
+  .approval .payload{background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:13px;margin:10px 0;line-height:1.7}
+  .approval .actions{display:flex;gap:10px;margin-top:10px}
+  .btn{border-radius:8px;padding:8px 18px;border:1px solid var(--border);background:#fff;cursor:pointer;font:inherit}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.danger{color:var(--red)}
+  .composer{padding:16px 24px 22px}
+  .composer-inner{max-width:760px;margin:0 auto;background:#fff;border:1px solid var(--border);border-radius:16px;padding:12px 14px;box-shadow:0 2px 8px rgba(43,38,32,.06)}
+  .composer textarea{width:100%;border:none;resize:none;font:inherit;outline:none;background:transparent}
+  .composer-bar{display:flex;gap:8px;align-items:center;margin-top:8px}
+  .chip{font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:14px;padding:4px 10px;cursor:pointer;background:var(--bg)}
+  .send{margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:8px 20px;cursor:pointer;font:inherit}
+
+  /* ---------- 右侧任务面板 ---------- */
+  .panel{width:320px;flex:none;border-left:1px solid var(--border);background:var(--bg);overflow-y:auto;padding:18px 16px}
+  .panel h3{font-family:var(--serif);font-size:16px;margin:0 0 4px}
+  .panel .sub{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px}
+  .card h4{margin:0 0 10px;font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+  .kv{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
+  .kv .k{color:var(--muted)}
+  .progress{height:6px;background:var(--panel);border-radius:3px;overflow:hidden;margin:8px 0}
+  .progress i{display:block;height:100%;background:var(--accent);width:66%}
+  .verify li{list-style:none;padding:5px 0;font-size:13px;display:flex;gap:8px}
+  .verify ul{margin:0;padding:0}
+  .pass{color:var(--green);font-weight:700}
+  .warn{color:var(--amber);font-weight:700}
+  .artifact{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--panel)}
+  .artifact:last-child{border-bottom:none}
+  .artifact .fname{font-size:13px;font-weight:600}
+  .artifact .fmeta{font-size:11px;color:var(--muted)}
+  .tag{font-size:11px;background:var(--accent-soft);border-radius:10px;padding:2px 8px;color:var(--text)}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- 左侧栏 -->
+  <aside class="sidebar">
+    <div class="brand">Hatch</div>
+    <button class="new-chat">＋ 新对话</button>
+    <nav class="nav">
+      <a class="active">💬 对话</a>
+      <a>📋 任务 <span class="badge">3</span></a>
+      <a>✋ 审批 <span class="badge">1</span></a>
+      <a>🧠 记忆</a>
+      <a>📦 产物</a>
+      <a>🎯 目标</a>
+      <a>⏰ 定时任务</a>
+      <a>⚙️ 设置</a>
+    </nav>
+    <div class="side-title">最近会话</div>
+    <div class="sessions">
+      <a class="active">方案评审会安排<span class="time">今天 00:12</span></a>
+      <a>每日 AI 消息速递<span class="time">昨天 10:00</span></a>
+      <a>给客户的报价邮件<span class="time">昨天 16:40</span></a>
+      <a>30u30 学习进度<span class="time">周一</span></a>
+      <a>公众号文章选题<span class="time">周日</span></a>
+    </div>
+    <div class="side-foot">
+      <div><span class="dot"></span>daemon 已连接 · 127.0.0.1:8787</div>
+      <div class="user-row"><div class="avatar">M</div><div>moses<div style="font-size:11px;color:var(--muted)">本地单用户</div></div></div>
+    </div>
+  </aside>
+
+  <!-- 中间对话区 -->
+  <section class="main">
+    <div class="chat-head">
+      <div class="title">方案评审会安排</div>
+      <span class="tag">任务进行中</span>
+      <div class="model-picker">模型：qwen4-max ▾</div>
+    </div>
+
+    <div class="chat">
+      <div class="chat-inner">
+        <div class="msg-user">明天下午三点建一个方案评审会，一小时，把李雷和韩梅梅都加上，再把交接清单写到 handover.md 里，写完发邮件给李雷确认。</div>
+
+        <div class="msg-ai">
+          <p>好的，我按这个顺序来：</p>
+          <div class="plan">
+            <h4>执行计划</h4>
+            <ul>
+              <li><span class="check done">✓</span> 创建日历事件「方案评审会」明天 15:00–16:00，参会人李雷、韩梅梅</li>
+              <li><span class="check done">✓</span> 写交接清单到 handover.md</li>
+              <li><span class="check doing">●</span> 发确认邮件给李雷（等你批准）</li>
+            </ul>
+          </div>
+
+          <div class="tool">
+            <span class="tname">create_event</span><span class="tok">✓ 已回读验证</span>
+            <div class="tdesc">方案评审会 · 2026-11-25 15:00–16:00 (Asia/Shanghai) · 参会人 2 人</div>
+          </div>
+          <div class="tool">
+            <span class="tname">fs_write</span><span class="tok">✓ 已回读验证</span>
+            <div class="tdesc">handover.md · 1,204 字节 · 内容与批准版本一致</div>
+          </div>
+
+          <div class="approval">
+            <h4>✋ 需要你的批准：发送邮件</h4>
+            <div>这封邮件发出后不可撤回。批准后发送的将是下面这确切内容。</div>
+            <div class="payload">
+              收件人：李雷<br/>
+              主题：方案评审会确认 — 明天 15:00<br/>
+              正文：评审会已定在明天下午三点，交接清单见 handover.md，请确认参会。
+            </div>
+            <div class="actions">
+              <button class="btn primary" onclick="this.textContent='已批准 ✓'">批准发送</button>
+              <button class="btn danger">拒绝</button>
+              <button class="btn">改一改</button>
+            </div>
+          </div>
+
+          <p>日历和清单都已经建好并通过回读验证。邮件在等你点头，批准后我立刻发出并把发送结果读回来确认。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="composer">
+      <div class="composer-inner">
+        <textarea rows="2" placeholder="给 Hatch 发消息…"></textarea>
+        <div class="composer-bar">
+          <span class="chip">📎 附件</span>
+          <span class="chip">🖼 图片</span>
+          <span class="chip">🎙 语音</span>
+          <button class="send">发送</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 右侧任务面板 -->
+  <aside class="panel">
+    <h3>任务详情</h3>
+    <div class="sub">方案评审会安排 · 2/3 步完成</div>
+    <div class="progress"><i></i></div>
+
+    <div class="card">
+      <h4>验收结果</h4>
+      <div class="verify"><ul>
+        <li><span class="pass">PASS</span> 日历事件时间/参会人一致（L2 回读）</li>
+        <li><span class="pass">PASS</span> 清单内容与批准版本一致</li>
+        <li><span class="warn">WAIT</span> 邮件未发送（待批准）</li>
+      </ul></div>
+    </div>
+
+    <div class="card">
+      <h4>运行信息</h4>
+      <div class="kv"><span class="k">状态</span><span>等待批准</span></div>
+      <div class="kv"><span class="k">模型调用</span><span>7 次</span></div>
+      <div class="kv"><span class="k">Token</span><span>18,240</span></div>
+      <div class="kv"><span class="k">费用</span><span>约 ¥0.42</span></div>
+    </div>
+
+    <div class="card">
+      <h4>产物</h4>
+      <div class="artifact"><div>📄</div><div><div class="fname">handover.md</div><div class="fmeta">交接清单 · v1 · 已验证</div></div></div>
+      <div class="artifact"><div>📅</div><div><div class="fname">方案评审会</div><div class="fmeta">日历事件 · 明天 15:00</div></div></div>
+    </div>
+
+    <div class="card">
+      <h4>相关记忆</h4>
+      <div style="font-size:13px;line-height:1.7;color:var(--muted)">李雷、韩梅梅为项目评审常驻参会人；评审会默认 1 小时。</div>
+    </div>
+  </aside>
+
+</div>
+<script>
+  document.querySelectorAll('.nav a').forEach(a=>{
+    a.addEventListener('click',()=>{
+      document.querySelectorAll('.nav a').forEach(x=>x.classList.remove('active'));
+      a.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
