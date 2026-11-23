@@ -76,6 +76,16 @@
   .chip{font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:14px;padding:4px 10px;cursor:pointer;background:var(--bg)}
   .send{margin-left:auto;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:8px 20px;cursor:pointer;font:inherit}
 
+  /* ---------- 思考中：Gemini 式流动渐变 ---------- */
+  @keyframes grad-flow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  @keyframes grad-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+  .thinking-bar{height:3px;background:linear-gradient(90deg,#4285f4,#9b72cb,#d96570,#f9ab78,#4285f4);background-size:300% 100%;animation:grad-flow 3s ease infinite;display:none}
+  .thinking-bar.on{display:block}
+  .composer-inner.thinking{border:1.5px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(120deg,#4285f4,#9b72cb,#d96570,#f9ab78,#4285f4) border-box;background-size:100% 100%,300% 300%;animation:grad-flow 3s ease infinite;box-shadow:0 0 18px rgba(155,114,203,.25)}
+  .check.doing{animation:grad-pulse 1.6s ease infinite}
+  .thinking-label{display:none;font-size:12px;background:linear-gradient(90deg,#4285f4,#9b72cb,#d96570,#f9ab78);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:grad-flow 3s ease infinite;font-weight:600}
+  .thinking-label.on{display:inline}
+
   /* ---------- 右侧任务面板 ---------- */
   .panel{width:320px;flex:none;border-left:1px solid var(--border);background:var(--bg);overflow-y:auto;padding:18px 16px;transition:width .2s ease,padding .2s ease}
   .panel.collapsed{width:0;padding:18px 0;border-left:none;overflow:hidden}
@@ -139,6 +149,7 @@
       <div class="model-picker">模型：qwen4-max ▾</div>
       <button class="toggle-btn" id="toggle-right" title="折叠/展开任务面板">任务面板</button>
     </div>
+    <div class="thinking-bar" id="thinking-bar"></div>
 
     <div class="chat">
       <div class="chat-inner">
@@ -191,6 +202,8 @@
           <span class="chip">📎 附件</span>
           <span class="chip">🖼 图片</span>
           <span class="chip">🎙 语音</span>
+          <span class="chip" id="demo-thinking">✨ 模拟思考</span>
+          <span class="thinking-label" id="thinking-label">Hatch 正在思考…</span>
           <button class="send">发送</button>
         </div>
       </div>
@@ -249,6 +262,18 @@
     sidebar.classList.add('collapsed');
     panel.classList.add('collapsed');
   }
+  // 思考中渐变演示
+  const composerInner=document.querySelector('.composer-inner');
+  const thinkingBar=document.getElementById('thinking-bar');
+  const thinkingLabel=document.getElementById('thinking-label');
+  function setThinking(on){
+    composerInner.classList.toggle('thinking',on);
+    thinkingBar.classList.toggle('on',on);
+    thinkingLabel.classList.toggle('on',on);
+  }
+  let thinking=false;
+  document.getElementById('demo-thinking').addEventListener('click',()=>{thinking=!thinking;setThinking(thinking);});
+  if(new URLSearchParams(location.search).get('thinking')==='1'){thinking=true;setThinking(true);}
 </script>
 </body>
 </html>
