@@ -33,6 +33,15 @@ function createWindow() {
     minHeight: 560,
     backgroundColor: "#faf9f5",
     title: "Hatch",
+    // 融合式标题栏：macOS 用 hiddenInset（红绿灯浮在顶栏上），Windows 用 overlay
+    ...(process.platform === "darwin"
+      ? { titleBarStyle: "hiddenInset" as const, trafficLightPosition: { x: 16, y: 16 } }
+      : process.platform === "win32"
+        ? {
+            titleBarStyle: "hidden" as const,
+            titleBarOverlay: { color: "#faf9f5", symbolColor: "#2b2620", height: 46 },
+          }
+        : {}),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,

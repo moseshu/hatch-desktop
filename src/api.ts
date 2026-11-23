@@ -56,6 +56,24 @@ export interface Session {
   id: string;
 }
 
+/** Approvals: GET /v1/approvals/{id} returns the exact payload that would run. */
+export interface Approval {
+  id: string;
+  [key: string]: unknown;
+}
+
+export async function getApproval(id: string): Promise<Approval> {
+  return request<Approval>(`/v1/approvals/${id}`);
+}
+
+export async function approveApproval(id: string): Promise<void> {
+  await request(`/v1/approvals/${id}/approve`, { method: "POST", body: "{}" });
+}
+
+export async function denyApproval(id: string): Promise<void> {
+  await request(`/v1/approvals/${id}/deny`, { method: "POST", body: "{}" });
+}
+
 export async function createSession(): Promise<Session> {
   return request<Session>("/v1/sessions", { method: "POST", body: "{}" });
 }
